@@ -1,2 +1,6 @@
 Manifest-Version: 1.0
+Class-Path: file:/C:/Users/Sean%20Grover/.gradle/caches/modules-2/file
+ s-2.1/com.github.Vatuu/discord-rpc/1.5.0/8eb956c201407bbc5e72af553582
+ 69a78b6de322/discord-rpc-1.5.0.jar
+Main-Class: me.limeglass.DRP.Main
 

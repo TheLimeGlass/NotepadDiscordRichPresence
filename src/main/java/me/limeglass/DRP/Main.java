@@ -5,11 +5,7 @@ import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import javax.swing.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import me.limeglass.DRP.utils.EnumAllWindowNames;
 
 public class Main {
 
@@ -31,39 +27,29 @@ public class Main {
 
 		DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
 			Main.ready = true;
-			System.out.println("Welcome " + user.username + "#" + user.discriminator + ".");
+			System.out.println("Notepad++ Discord Precsenced hooked into account " + user.username + "#" + user.userId);
 			DiscordRPC.discordUpdatePresence(getPresence());
 		}).build();
 		DiscordRPC.discordInitialize("468010822610714634", handlers, true);
-
+		
 		while (true) {
 			DiscordRPC.discordRunCallbacks();
-
-			if (!ready) continue;
-			
-			if (getProcessNames().contains("notepad++.exe")) {
-				DiscordRPC.discordUpdatePresence(getPresence());
-			}
+			if (ready) DiscordRPC.discordUpdatePresence(getPresence());
 		}
 	}
 	
 	private static DiscordRichPresence getPresence() {
-		return new DiscordRichPresence.Builder("Running Test")
+		String name = "Starting up...";
+		for (String title : EnumAllWindowNames.getAllWindowNames()) {
+			if (title.endsWith(" - Notepad++")) {
+				int index = title.lastIndexOf("\\");
+				name = title.substring(index + 1, title.lastIndexOf(" - Notepad++"));
+				name = "Editing: " + name;
+			}
+		}
+		return new DiscordRichPresence.Builder(name)
+			//.setDetails("Editing: " + name)
 			.setBigImage("big", null)
 			.build();
-	}
-	
-	private static Set<String> getProcessNames() {
-		Set<String> processes = new HashSet<String>();
-		try {
-			Process process = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			processes = input.lines().collect(Collectors.toSet());
-			input.close();
-		} catch (Exception err) {
-			System.out.println("Error while grabbing the processes of the system.");
-			err.printStackTrace();
-		}
-		return processes;
 	}
 }
