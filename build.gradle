@@ -1,0 +1,42 @@
+apply plugin: 'java-library'
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'application'
+
+jar.archiveName = project.name + '.jar'
+
+mainClassName = 'me.limeglass.DRP.Main'
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+repositories {
+	maven {
+		url 'https://jitpack.io'
+	}
+}
+
+dependencies {
+	
+	//discord-rpc Java
+	shade (group: 'com.github.Vatuu', name: 'discord-rpc', version: '1.5.0')
+}
+
+jar {
+ 	doFirst {
+        manifest {
+            if (!configurations.compile.isEmpty()) {
+                attributes(
+                        'Class-Path': configurations.compile.collect{it.toURI().toString()}.join(' '),
+                        'Main-Class': mainClassName)
+            }
+        }
+    }
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+}
